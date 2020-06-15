@@ -53,3 +53,33 @@ err_ret(const char *fmt, ...)
     err_doit(1, errno, fmt, ap);
     va_end(ap);
 }
+
+char *get_env_command_prompt() {
+    setenv("COMMAND_PROMPT", "->", 0);
+    char* ret = getenv("COMMAND_PROMPT");
+    return ret;
+}
+
+int pre_handle_command(char *command) {
+    char* background = "bg", * ssetenv="export";
+    // remove command front space
+    int i = 0, j = 0;
+    for(;command[i]==' '||command[i]=='\t';i++);
+    for(;command[i]!='\0';j++)
+        command[j] = command[i++];
+    command[j] = '\0';
+
+    if(strncmp(command, ssetenv, strlen(ssetenv))==0){
+        for(j=strlen(ssetenv);command[j]==' ';j++);
+        for (i=0;command[j]!='\0';i++,j++)
+            command[i] = command[j];
+        command[i] = '\0';
+        return setenv_;
+    }else if(strncmp(command,background,strlen(background))==0){
+        for(i=0,j=strlen(background);command[j]!='\0';i++,j++)
+            command[i]=command[j];
+        command[i] = '\0';
+        return nohup;
+    } else
+        return normal;
+}
